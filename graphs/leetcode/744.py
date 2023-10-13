@@ -1,6 +1,28 @@
-cases = [((["c", "f", "j"], "a"), "c"),
-         ((["c", "f", "j"], "c"), "f"),
-         ((["x", "x", "y", "y"], "z"), "x")]
+import bisect
+from time import time
+
+
+def timer_func(func):
+    def wrap_func(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        print(f'Function {func.__name__!r} executed in {(t2 - t1):.6f}s')
+        return result
+
+    return wrap_func
+
+
+class ReviewAnswers:
+    def __init__(self):
+        self.cases = [((["c", "f", "j"], "a"), "c"),
+                      ((["c", "f", "j"], "c"), "f"),
+                      ((["x", "x", "y", "y"], "z"), "x")]
+
+    @timer_func
+    def check_answers(self, func):
+        for n, case in enumerate(self.cases):
+            print(f'Case N{n}: ', func(*case[0]) == case[1])
 
 
 def next_greatest_letter(letters, target):
@@ -12,7 +34,6 @@ def next_greatest_letter(letters, target):
 
     start = 0
     end = len(letters) - 1
-    middle = None
 
     while start < end:
         middle = ((end - start) // 2) + start
@@ -41,6 +62,10 @@ def next_greatest_letter(letters, target):
         return letters[0]
 
 
+def next_greatest_letter_v2(letters, target):
+    return letters[bisect.bisect(letters, target) % len(letters)]
+
+
 if __name__ == '__main__':
-    for n, case in enumerate(cases):
-        print(f'Case N{n}: ', next_greatest_letter(case[0][0], case[0][1]) == case[1])
+    ReviewAnswers().check_answers(next_greatest_letter)
+    ReviewAnswers().check_answers(next_greatest_letter_v2)
